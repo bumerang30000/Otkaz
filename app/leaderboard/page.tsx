@@ -49,17 +49,6 @@ export default function LeaderboardPage() {
   
   const { t } = useTranslation(user?.language || 'en');
 
-  useEffect(() => {
-    const parsedUser = getUserFromStorage();
-    if (!parsedUser) {
-      router.push('/');
-      return;
-    }
-    setUser(parsedUser);
-    loadLeaderboard(parsedUser.id);
-    loadDailyTasks(parsedUser.id);
-  }, [router, selectedPeriod, loadLeaderboard, loadDailyTasks]);
-
   const loadLeaderboard = useCallback(async (userId: string) => {
     try {
       const res = await fetch(`/api/leaderboard?period=${selectedPeriod}`);
@@ -86,6 +75,17 @@ export default function LeaderboardPage() {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    const parsedUser = getUserFromStorage();
+    if (!parsedUser) {
+      router.push('/');
+      return;
+    }
+    setUser(parsedUser);
+    loadLeaderboard(parsedUser.id);
+    loadDailyTasks(parsedUser.id);
+  }, [router, selectedPeriod, loadLeaderboard, loadDailyTasks]);
 
   const completeTask = async (taskId: string) => {
     try {

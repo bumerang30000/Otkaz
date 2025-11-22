@@ -45,55 +45,6 @@ export default function GoalsPage() {
   
   const { t } = useTranslation(user?.language || 'en');
 
-  useEffect(() => {
-    const parsedUser = getUserFromStorage();
-    if (!parsedUser) {
-      router.push('/');
-      return;
-    }
-    setUser(parsedUser);
-    loadGoals(parsedUser.id);
-  }, [router, loadGoals]);
-
-  const loadGoals = useCallback(async (userId: string) => {
-    if (isLoadingGoals) return;
-    
-    setIsLoadingGoals(true);
-    try {
-      const res = await fetch(`/api/goals/list?userId=${userId}`);
-      const data = await res.json();
-      if (res.ok) {
-        // Filter out any duplicate goals by unique identifier.  Sometimes the
-        // backend can return repeated records (for example if default goals are
-        // inserted more than once).  By deduplicating here we avoid showing the
-        // same goal multiple times in the UI.
-        // Deduplicate goals by name rather than ID.  When default goals are
-        // seeded multiple times or edited, they may have different IDs but the
-        // same name.  Filtering by name ensures we only display one copy.
-        const seenNames = new Set<string>();
-        const uniqueGoals: Goal[] = [];
-        for (const goal of data.goals) {
-          const key = goal.name.trim().toLowerCase();
-          if (!seenNames.has(key)) {
-            seenNames.add(key);
-            uniqueGoals.push(goal);
-          }
-        }
-        setGoals(uniqueGoals);
-        setTotalSavings(data.totalSavings);
-        
-        if (data.goals.length === 0 && !localStorage.getItem(`defaultGoalsCreated_${userId}`)) {
-          await createDefaultGoals(userId);
-          localStorage.setItem(`defaultGoalsCreated_${userId}`, 'true');
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load goals:', error);
-    } finally {
-      setIsLoadingGoals(false);
-    }
-  }, [createDefaultGoals, isLoadingGoals]);
-
   const createDefaultGoals = useCallback(async (userId: string) => {
     try {
       const checkRes = await fetch(`/api/goals/check-exists?userId=${userId}`);
@@ -149,6 +100,55 @@ export default function GoalsPage() {
     
     setGoals(createdGoals);
   }, []);
+
+  const loadGoals = useCallback(async (userId: string) => {
+    if (isLoadingGoals) return;
+    
+    setIsLoadingGoals(true);
+    try {
+      const res = await fetch(`/api/goals/list?userId=${userId}`);
+      const data = await res.json();
+      if (res.ok) {
+        // Filter out any duplicate goals by unique identifier.  Sometimes the
+        // backend can return repeated records (for example if default goals are
+        // inserted more than once).  By deduplicating here we avoid showing the
+        // same goal multiple times in the UI.
+        // Deduplicate goals by name rather than ID.  When default goals are
+        // seeded multiple times or edited, they may have different IDs but the
+        // same name.  Filtering by name ensures we only display one copy.
+        const seenNames = new Set<string>();
+        const uniqueGoals: Goal[] = [];
+        for (const goal of data.goals) {
+          const key = goal.name.trim().toLowerCase();
+          if (!seenNames.has(key)) {
+            seenNames.add(key);
+            uniqueGoals.push(goal);
+          }
+        }
+        setGoals(uniqueGoals);
+        setTotalSavings(data.totalSavings);
+        
+        if (data.goals.length === 0 && !localStorage.getItem(`defaultGoalsCreated_${userId}`)) {
+          await createDefaultGoals(userId);
+          localStorage.setItem(`defaultGoalsCreated_${userId}`, 'true');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load goals:', error);
+    } finally {
+      setIsLoadingGoals(false);
+    }
+  }, [createDefaultGoals, isLoadingGoals]);
+
+  useEffect(() => {
+    const parsedUser = getUserFromStorage();
+    if (!parsedUser) {
+      router.push('/');
+      return;
+    }
+    setUser(parsedUser);
+    loadGoals(parsedUser.id);
+  }, [router, loadGoals]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
