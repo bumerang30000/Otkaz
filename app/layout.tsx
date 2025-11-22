@@ -7,11 +7,8 @@ export const metadata: Metadata = {
   title: 'Enough - Gamified Savings PWA',
   description: 'Track your savings, earn achievements, and see crypto ROI',
   manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Enough',
-  },
+  // Avoid deprecated apple-specific meta tags; rely on standard PWA metadata.
+  appleWebApp: false,
 };
 
 export const viewport: Viewport = {
@@ -28,6 +25,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
         
         {/* Professional Font - Inter */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
