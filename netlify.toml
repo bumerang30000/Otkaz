@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build"
+  # Only set publish = "out" if you run `next export` and want to publish the static export
+  # publish = "out"
+
+
+
