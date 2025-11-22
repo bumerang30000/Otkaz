@@ -48,17 +48,22 @@ export function getParsedBody<T = any>(req: any): T {
 
 // Returns true if DB is configured; otherwise responds 503 and returns false.
 export function requireDatabase(res: any): boolean {
-  if (!process.env.DATABASE_URL) {
-    const pooled = process.env.NETLIFY_DATABASE_URL;
-    const direct = process.env.NETLIFY_DATABASE_URL_UNPOOLED;
+  const normalize = (v?: string) => (v && v.trim().length > 0 ? v.trim() : undefined);
+
+  if (!normalize(process.env.DATABASE_URL)) {
+    const pooled = normalize(process.env.NETLIFY_DATABASE_URL);
+    const direct = normalize(process.env.NETLIFY_DATABASE_URL_UNPOOLED);
     if (pooled || direct) {
       process.env.DATABASE_URL = pooled || direct;
     }
   }
-  if (!process.env.DATABASE_URL) {
+
+  if (!normalize(process.env.DATABASE_URL)) {
     try {
       res.status(503).json({ error: 'Database not configured', code: 'DB_MISSING' });
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     return false;
   }
   return true;

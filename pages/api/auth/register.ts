@@ -96,8 +96,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Database validation error', code: error.code });
     }
     if (error instanceof Prisma.PrismaClientInitializationError || error instanceof Prisma.PrismaClientRustPanicError) {
-      return res.status(503).json({ error: 'Database unavailable', code: 'DB_UNAVAILABLE' });
+      return res.status(503).json({ error: 'Database unavailable', code: 'DB_UNAVAILABLE', details: error.message });
     }
-    return res.status(500).json({ error: 'Unexpected server error' });
+    return res.status(500).json({ error: 'Unexpected server error', details: error?.message || 'unknown' });
   }
 }
