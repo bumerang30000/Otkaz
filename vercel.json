@@ -1,0 +1,13 @@
+{
+    "buildCommand": "prisma generate && prisma migrate deploy && next build",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "functions": {
+        "pages/api/**/*.ts": {
+            "maxDuration": 10
+        }
+    },
+    "env": {
+        "NODE_VERSION": "20"
+    }
+}

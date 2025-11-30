@@ -1,8 +1,17 @@
 node_modules/
 .next/
 .env
-*.log
+.env.local
 .DS_Store
+<<<<<<< Updated upstream
+=======
+*.db
+*.db-journal
+
+# Vercel
+.vercel
+# SQLite database files (no longer used)
+>>>>>>> Stashed changes
 prisma/dev.db
 prisma/dev.db-journal
 prisma/migrations/
